@@ -106,6 +106,18 @@
                         </div>
                     </span>
                     </p>
+
+                    <div v-if="selected_version.type == 'full' " class="ui checkbox use-snapshot-indices">
+                      <div class="ui toggle checkbox">
+                        <input
+                            type="checkbox"
+                            id="use_snapshot_indices"
+                            name="use_snapshot_indices"
+                            :checked="use_snapshot_indices ? 'checked' : false"
+                            @change="toggleUseSnapshotIndices($event)">
+                        <label style="color: white !important;">Enable this setting to bypass "the no such index" error.</label>
+                      </div>
+                    </div>
                 </div>
                 <div class="actions">
                     <div class="ui red basic cancel inverted button">
@@ -150,6 +162,7 @@ export default {
       versions: [],
       // fetching info
       selected_version: null, // selected version from the table
+      use_snapshot_indices: false,
       info_error: null,
       installing: null,
       install_path: []
@@ -165,6 +178,9 @@ export default {
         this.versions = []
         this.refreshVersions()
       }
+    },
+    toggleUseSnapshotIndices: function (event) {
+      this.use_snapshot_indices = !this.use_snapshot_indices
     },
     getVersionClass: function (version) {
       if (this.backend.version == version.target_version) {
@@ -256,7 +272,11 @@ export default {
         // from files locally stored. Hub will not installed them again other than
         // with using apply() or re-downloading them. We stay on the safe (and easy,
         // I confess) side.
-        var data = { version: version.build_version, force: 1 }
+        var data = {
+          version: version.build_version,
+          force: 1,
+          use_snapshot_indices: self.use_snapshot_indices,
+        }
         return axios.post(axios.defaults.baseURL + `/standalone/${self.name}/install`, data)
       }
       var onSuccess = function (response) {
