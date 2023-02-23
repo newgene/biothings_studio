@@ -99,10 +99,11 @@ export default {
       if (this.inspect_error.length) { errs.push('Inspect') }
       return errs.join(' - ') + ' error'
     },
-    dump: function (release = null, force = null) {
+    dump: function (release = null, force = null, dump_only = null) {
       var data = {}
       if (release != null && release) { data.release = release }
       if (force != null) { data.force = force }
+      if (dump_only != null) { data.dump_only = dump_only }
       axios.put(axios.defaults.baseURL + `/source/${this.source.name}/dump`, data)
         .then(response => {
           console.log(response.data.result)

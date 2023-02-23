@@ -59,6 +59,10 @@
                                 <input type="checkbox" tabindex="0" class="hidden" id="force">
                                 <label>Bypass check for new release availability, and force dump</label>
                             </div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" tabindex="0" class="hidden" id="dump_only">
+                                <label>If checked, not trigger an upload after dump</label>
+                            </div>
                         </div>
                         <div class="required six wide field">
                             <button :class="['ui labeled small icon button', $parent.download_status == 'downloading' ? 'disabled' : '']" @click="do_dump();">
@@ -88,11 +92,15 @@ export default {
   components: { TracebackViewer },
   methods: {
     do_dump () {
-      var field = $(`.ui.dump.form.${this.source._id}`).form('get field', 'force')
-      var force = null
-      if (field) { force = field.is(':checked') }
-      console.log(force)
-      return this.$parent.dump(null, force)
+			var force_field = $(`.ui.dump.form.${this.source._id}`).form('get field', 'force')
+			var dump_only_field = $(`.ui.dump.form.${this.source._id}`).form('get field', 'dump_only')
+			var force = null
+			var dump_only = null
+      if (force_field) { force = force_field.is(':checked') }
+      if (dump_only_field) { dump_only = dump_only_field.is(':checked') }
+      console.log(`force: ${force}`)
+			console.log(`dump_only: ${dump_only}`)
+      return this.$parent.dump(null, force, dump_only)
     }
   }
 }
